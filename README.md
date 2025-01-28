@@ -40,66 +40,69 @@ To configure access to the EC2 instance:
 1. Download the `.pem` key file for the instance from AWS.
 2. Use the key file to connect via SSH:
    ```bash
-   ssh -i "your-key-file.pem" ubuntu@<elastic-ip>
+   ssh -i ./Downloads/labsuser.pem ubuntu@34.195.44.214
 
 ### 2.2 Installing Required Services
 #### 2.2.1 Update and Upgrade
 
 Run the following commands to ensure your system is up to date:
 
-sudo apt update
-sudo apt upgrade -y
+```bash
+   ssh -i ./Downloads/labsuser.pem ubuntu@34.195.44.214
+   sudo apt update
+   sudo apt upgrade -y
+```
 
 #### 2.2.2 Install Apache and Enable Proxy
 
 Install Apache and enable the necessary modules for proxying:
-
+```bash
 sudo apt install apache2 -y
 sudo a2enmod proxy proxy_http
 sudo systemctl restart apache2
-
+```
 #### 2.2.3 Install Node.js, npm, and pm2
 
 Install the required tools for running the React project:
-
+```bash
 sudo apt install nodejs -y
 sudo apt install npm -y
 sudo npm install -g pm2
-
+```
 ### 2.3 Clone and Build the React Project
 #### 2.3.1 Clone the Repository
 
 Clone the React project into a directory called /adivina-el-numero:
-
+```bash
 git clone https://github.com/gisgarme/adivina-el-numero.git /adivina-el-numero
 cd /adivina-el-numero
-
+```
 #### 2.3.2 Install Dependencies and Build
 
 Install project dependencies and compile the project:
-
+```bash
 npm install
 npm run build
-
+```
 This will generate a dist directory with the compiled React application.
 
 #### 2.3.3 Start the Application
 
 Use pm2 to start the React project:
-
+```bash
 pm2 start npm --name "vite-server" -- run dev -- --host
 pm2 startup
 pm2 save
-
+```
 ### 2.4 Configure the Apache Proxy
 
 Redirect all connections from port 80 to the Vite-React port (5173). To do this, modify the Apache configuration:
 
 Create a new configuration file:
-
+```bash
 sudo cp /etc/apache2/sites-available/000-default.conf /etc/apache2/sites-available/adivina-el-numero.conf
 sudo nano /etc/apache2/sites-available/adivina-el-numero.conf
-
+```
 Add the following content to the configuration file:
 
 <VirtualHost *:80>
@@ -118,6 +121,7 @@ Add the following content to the configuration file:
 </VirtualHost>
 
 Save and enable the configuration:
-
+```bash
 sudo a2ensite adivina-el-numero.conf
 sudo systemctl restart apache2
+```
